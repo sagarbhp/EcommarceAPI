@@ -4,7 +4,7 @@
   "description": "An api to manage users, stores, items and order details in database",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "start": "node server.js"
   },
   "author": "Sagar Roy",
@@ -17,5 +17,10 @@
     "json2csv": "^5.0.6",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.15"
+  },
+  "devDependencies": {
+    "chai": "^4.3.0",
+    "chai-http": "^4.3.0",
+    "mocha": "^8.3.0"
   }
 }

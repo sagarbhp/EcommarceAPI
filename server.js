@@ -69,6 +69,6 @@ app.post("/", (req, res) => {
 
 //-------------------------------- Listen -------------------------------------
 
-app.listen(PORT, () => {
+module.exports = app.listen(PORT, () => {
   console.log(`Server Started on PORT: ${PORT}`);
 });
