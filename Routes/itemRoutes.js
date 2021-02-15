@@ -195,11 +195,16 @@ itemRouter.post("/items/purchase/:itemID", requireToken, async (req, res) => {
     if (report.nModified !== 1) {
       throw new Error("Too many requests. Please order again later");
     }
-    let newBalance = req.user.balance - item.unitPrice * quantity;
+    let newBalance = updateBalance(
+      req.user.balance,
+      -quantity * item.unitPrice
+    );
     await User.findByIdAndUpdate(
       { _id: req.user._id },
       { balance: newBalance }
     );
+
+    req.user.password = "It's encrypted anyway";
 
     let order = new Order({
       item,

@@ -18,6 +18,7 @@ const authRouter = require("./Routes/authRoutes");
 const userRouter = require("./Routes/userRouter");
 const storeRouter = require("./Routes/storeRouter");
 const itemRouter = require("./Routes/itemRoutes");
+const orderRouter = require("./Routes/orderRoutes");
 
 //------------------------------- Constants -----------------------------------
 dotenv.config();
@@ -37,6 +38,7 @@ app.use(authRouter);
 app.use(userRouter);
 app.use(storeRouter);
 app.use(itemRouter);
+app.use(orderRouter);
 
 //------------------------------- DB Config -----------------------------------
 mongoose.connect(MONGO_URI, {

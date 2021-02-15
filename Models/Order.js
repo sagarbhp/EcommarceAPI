@@ -1,7 +1,44 @@
 const mongoose = require("mongoose");
 
 const itemSchema = require("./Item");
-const userSchema = require("./User");
+
+const buyerSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  shippingAddress: {
+    line1: {
+      type: String,
+      required: true,
+    },
+    line2: String,
+    city: {
+      type: String,
+      required: true,
+    },
+    province: {
+      type: String,
+      required: true,
+    },
+    postalCode: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
+  },
+});
 
 const orderSchema = new mongoose.Schema({
   item: {
@@ -13,7 +50,7 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   buyer: {
-    type: userSchema,
+    type: buyerSchema,
     required: true,
   },
   purchaseTime: {
