@@ -1,9 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
-const emailValidator = require("../Middleware/emailValidator");
-const hashPassword = require("../Middleware/hashPassword");
 const requireToken = require("../Middleware/auth");
 const updateBalance = require("../Helper/updateBalance");
 
@@ -148,7 +145,7 @@ storeRouter.delete(
         if (storeIDs.length === 0) {
           update.isOwner = false;
         }
-        User.updateOne({ _id: req.user.id }, update);
+        await User.updateOne({ _id: req.user.id }, update);
       }
       res.status(200).send("Successfully deleted document and updated user");
     } catch (err) {

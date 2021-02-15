@@ -44,7 +44,12 @@ userRouter.patch("/update-user-info", requireToken, async (req, res) => {
 
   //updating balance if balance is being added
   if (req.body.balance) {
-    req.body.balance = updateBalance(req.user.balance, req.body.balance);
+    try {
+      req.body.balance = updateBalance(req.user.balance, req.body.balance);
+    } catch (err) {
+      console.log("Expected valid number", err);
+      return res.status(422).send(err.message);
+    }
   }
 
   // setting filter and update

@@ -3,6 +3,10 @@ module.exports = (currentBalance, update) => {
     return 0;
   }
 
+  if (typeof update !== "number") {
+    throw new Error("Expected valid number");
+  }
+
   if (!currentBalance) {
     return update;
   }

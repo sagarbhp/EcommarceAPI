@@ -12,9 +12,12 @@ const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 require("./Models/User");
 require("./Models/Store");
+require("./Models/Item");
+require("./Models/Order");
 const authRouter = require("./Routes/authRoutes");
 const userRouter = require("./Routes/userRouter");
 const storeRouter = require("./Routes/storeRouter");
+const itemRouter = require("./Routes/itemRoutes");
 
 //------------------------------- Constants -----------------------------------
 dotenv.config();
@@ -28,11 +31,12 @@ const MONGO_URI =
 const app = express();
 app.use(bodyParser.json());
 
-//-------------------------------- Model and Routes Import -------------------------------
+//------------------------------- Routers Config-------------------------------
 
 app.use(authRouter);
 app.use(userRouter);
 app.use(storeRouter);
+app.use(itemRouter);
 
 //------------------------------- DB Config -----------------------------------
 mongoose.connect(MONGO_URI, {
