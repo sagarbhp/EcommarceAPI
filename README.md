@@ -1,5 +1,10 @@
 # E-Commarce API
 
+clone the repo and run `npm install`
+
+## Entry Point to server: server.js `node server.js`
+## Entry point to automation: automation.js `node automation.js`
+
 ## Resources \*\*
 
 1. ## User:
