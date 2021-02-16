@@ -5,21 +5,18 @@
 1. User:
    User is the basis of all data creation. The user schema is detailed below. this format needs to be follow to sign up
 
-   {
    firstName: String, // required
    lastName: String, // required
    password: String, // required, min 6 chars
    email: String, // required, formatted and, unique
    balance: Number, // optional
-   shippingAddress: {
+   shippingAddress:
    _ line1: String, // required
    _ line2: String, // required
    _ city: String, // required
    _ province: String, // required
    _ postalCode: String, // required
    _ country: String, // required
-   }
-   }
 
    ** MOCK JSON DATA TO CREATE A USER **
    {
@@ -45,17 +42,14 @@
    User with authorization token can create store.
    The Store Schema is detailed below
 
-   {
    name: String, // required
-   address:{
+   address:
    _ line1: String, // optional
    _ line2: String, // optional
    _ city: String, // optional
    _ province: String //optional
    _ postalCode: String //optional
    _ country: String //optional
-   }
-   }
 
    ** MOCK JSON DATA TO CREATE A STORE **
    {
@@ -71,26 +65,43 @@
    Store owners can add item to their stores
    The item schema is detailed below
 
-   {
    name: String, //required
    description: String, //reqired
    unitPrice: Number, //required
    quantity: Number //required
-   }
 
    ** MOCK JSON DATA TO CREATE AN ITEM **
+
+   {
+   "name" : "Product 3",
+   "description": "An Awesome product",
+   "unitPrice" : "100",
+   "quantity" : 1000
+   }
+
+4. Order
+   When user purchase an item order is created
+   the item schema is detailed below
+
+   item: itemSchima
+   buyer: UserSchema
+   quantity: Number
+   status: String
+   purchaseTime: Date
 
 # End Points
 
 ** ------------------------ Test Routes ------------------------------ **
 
 1. Method: GET
-   End Point: "/"
+
+   ### End Point: "/"
 
    should return "hello world"
 
 2. Method: POST
-   End Point: "/"
+
+   ### End Point: "/"
 
    should return "data received"
 
