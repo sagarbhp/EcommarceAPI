@@ -11,7 +11,7 @@ const User = mongoose.model("User");
 orderRouter.get("/orders", requireToken, async (req, res) => {
   console.log("Starting operation to get all the orders");
   try {
-    orders = await Order.find({});
+    let orders = await Order.find({});
     return res.status(200).send(orders);
   } catch (err) {
     console.log("Encountered error while fetching all orders");
@@ -23,7 +23,7 @@ orderRouter.get("/orders/:orderID", requireToken, async (req, res) => {
   const orderID = req.params.orderID;
   console.log("Starting operation to get single oder with id: ", orderID);
   try {
-    order = await Order.findById({ _id: orderID });
+    let order = await Order.findById({ _id: orderID });
     return res.status(200).send(order);
   } catch (err) {
     return res.status(422).send(err.message);

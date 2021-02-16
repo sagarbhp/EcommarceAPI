@@ -20,7 +20,7 @@ itemRouter.post(
     const { user } = req;
     console.log("Starting operation to add item in store: ", storeID);
     try {
-      store = await Store.findById({ _id: storeID });
+      let store = await Store.findById({ _id: storeID });
       console.log(store, user);
       if (!store) {
         return res.status(404).send("Store was not found");
@@ -34,9 +34,9 @@ itemRouter.post(
       newItemData.ownerID = store.ownerID;
       newItemData.timeStamp = new Date();
 
-      item = new Item(newItemData);
-      a = await item.save();
-      return res.status(201).send(a);
+      let item = new Item(newItemData);
+      await item.save();
+      return res.status(201).send(item);
     } catch (err) {
       console.log("Error occured while saving new item \n", err);
       res.status(422).send(err.message);
@@ -57,19 +57,24 @@ itemRouter.get("/items", async (req, res) => {
 });
 
 //----------------------- Search item by name ----------------------------------
-itemRouter.get("/items/serach-by-name/:itemName", requireToken, (req, res) => {
-  let itemName = req.params.itemName;
-  console.log("Searching item by name: ", itemName);
-  itemName = itemName.replace(/\+/gi, " ");
-  itemName = itemName.toLowerCase();
-  try {
-    items = Item.find({ name: itemName });
-    res.status(200).send(items);
-  } catch (err) {
-    console.log("Encountered error while getting data", err);
-    res.status(500).send(err.message);
+itemRouter.get(
+  "/items/serach-by-name/:itemName",
+  requireToken,
+  async (req, res) => {
+    let itemName = req.params.itemName;
+
+    itemName = itemName.replace(/\+/gi, " ");
+    console.log("Searching item by name: ", itemName);
+
+    try {
+      let items = await Item.find({ name: itemName });
+      res.status(200).send(items);
+    } catch (err) {
+      console.log("Encountered error while getting data", err);
+      res.status(500).send(err.message);
+    }
   }
-});
+);
 
 //----------------------- Get item by id ------------------------------------
 itemRouter.get("/items/:itemID", requireToken, async (req, res) => {
@@ -77,7 +82,7 @@ itemRouter.get("/items/:itemID", requireToken, async (req, res) => {
   console.log("Getting item by item id: ", itemID);
 
   try {
-    item = await Item.findById({ _id: itemID });
+    let item = await Item.findById({ _id: itemID });
     res.status(200).send(item);
   } catch (err) {
     console.log("Encountered error while geeting item by id \n", err);
@@ -91,7 +96,7 @@ itemRouter.get("/items/store/:storeID", requireToken, async (req, res) => {
   console.log("Getting all items from store: ", storeID);
 
   try {
-    items = await Item.find({ storeID });
+    let items = await Item.find({ storeID });
     res.status(200).send(items);
   } catch (err) {
     console.log("Encountered error while geeting items by store id \n", err);
@@ -103,10 +108,13 @@ itemRouter.get("/items/store/:storeID", requireToken, async (req, res) => {
 itemRouter.patch("/items/update/:itemID", requireToken, async (req, res) => {
   const itemID = req.params.itemID;
   const update = req.body;
+  if (req.body && Object.keys(req.body).length === 0) {
+    return res.status(422).send("No update parameter was given");
+  }
   console.log("Starting operation to Update item with item id: ", itemID);
 
   try {
-    item = await Item.findById({ _id: itemID });
+    let item = await Item.findById({ _id: itemID });
     if (!item) {
       console.log("No item found with provided id");
       return res.status(404).send("No item found with provided id");
@@ -122,9 +130,12 @@ itemRouter.patch("/items/update/:itemID", requireToken, async (req, res) => {
 
     update.ownerID = item.ownerID;
     update.storeID = item.storeID;
-    update.quantity = updateBalance(item.quantity, update.quantity);
+    update.timeStamp = new Date();
+    if (update.quantity) {
+      update.quantity = updateBalance(item.quantity, update.quantity);
+    }
 
-    newItem = await Item.findByIdAndUpdate({ _id: itemID }, update, {
+    let newItem = await Item.findByIdAndUpdate({ _id: itemID }, update, {
       new: true,
     });
     res.status(200).send(newItem);
@@ -162,6 +173,9 @@ itemRouter.post("/items/purchase/:itemID", requireToken, async (req, res) => {
   const { quantity } = req.body;
   if (!quantity || typeof quantity != "number") {
     return res.status(422).send("valid Quantity is needed to process request");
+  }
+  if (!req.user.balance) {
+    return res.status(422).send("User does not have any balance");
   }
   try {
     item = await Item.findById({ _id: itemID });

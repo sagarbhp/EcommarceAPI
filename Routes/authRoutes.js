@@ -20,7 +20,7 @@ authRouter.post("/signup", async (req, res) => {
     req.body
   );
   console.log("Verifying email and password ");
-  const { email, password } = req.body;
+  let { email, password } = req.body;
   if (!email || !password || password.length < 6 || !emailValidator(email)) {
     return res
       .status(422)
@@ -37,6 +37,13 @@ authRouter.post("/signup", async (req, res) => {
   }
 
   req.body.password = hashed;
+  email = email.toLowerCase();
+  req.body.email = email;
+  req.body.isOwner = false;
+  req.body.storeIDs = [];
+  if (!req.body.balance) {
+    req.body.balance = 0;
+  }
 
   console.log("Starting Data base operation for new user ", req.body);
 
@@ -55,16 +62,18 @@ authRouter.post("/signup", async (req, res) => {
 
 //------------------------ Login (Post) Route --------------------------------
 authRouter.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
   if (!email || !password) {
     return res.status(422).send({ error: "Must provide email and password" });
   }
 
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.status(422).send({ error: "Could not find user" });
-  }
+  email = email.toLowerCase();
+
   try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(422).send({ error: "Could not find user" });
+    }
     await user.comparePassword(password);
     // Creating json web token
     const token = jwt.sign({ userID: user._id }, jwtKey);

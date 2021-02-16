@@ -14,20 +14,27 @@ const jwtKey = process.env.JWT_KEY || "asdfghjkl!@33.?";
 
 //----------------------- Create new store -----------------------------------
 storeRouter.post("/new-store", requireToken, async (req, res) => {
-  userStores = [];
+  let userStores = [];
   if (req.user.storeIDs) {
     userStores = [...req.user.storeIDs];
   }
   console.log("Starting Create new store operation");
+
+  if (!req.body.name || typeof req.body.name != "string") {
+    return res.status(422).send("valid name is required to create store");
+  }
+
+  req.body.name = req.body.name.toLowerCase();
+
   try {
-    store = new Store(req.body);
+    let store = new Store(req.body);
     store.ownerID = req.user._id;
     await store.save();
 
-    userUpdate = { isOwner: true, storeIDs: [...userStores, store._id] };
+    let userUpdate = { isOwner: true, storeIDs: [...userStores, store._id] };
     await User.findByIdAndUpdate({ _id: req.user._id }, userUpdate);
 
-    newStore = await Store.findById(store._id);
+    let newStore = await Store.findById(store._id);
     res.status(201).send(newStore);
   } catch (err) {
     res.status(500).send(err.message);
@@ -50,7 +57,7 @@ storeRouter.get("/stores/:storeID", async (req, res) => {
   const storeID = req.params.storeID;
   console.log("Starting operation to list single store with id: ", storeID);
   try {
-    store = await Store.findById({ _id: storeID });
+    let store = await Store.findById({ _id: storeID });
     res.status(200).send(store);
   } catch (err) {
     res.status(422).send("Unprocessible entity");
@@ -60,10 +67,11 @@ storeRouter.get("/stores/:storeID", async (req, res) => {
 //----------------------- Search store with full name ---------------------
 storeRouter.get("/stores/name/:storeName", requireToken, async (req, res) => {
   let storeName = req.params.storeName;
+  storeName = storeName.toLowerCase();
   storeName = storeName.replace(/\+/gi, " ");
   console.log("Searching store by full name: ", storeName);
   try {
-    stores = await Store.find({ name: storeName });
+    let stores = await Store.find({ name: storeName });
     res.status(200).send(stores);
   } catch (err) {
     res.status(422).send("Unprocessible entity");
@@ -75,7 +83,7 @@ storeRouter.get("/stores/owner/:ownerID", requireToken, async (req, res) => {
   const ownerID = req.params.ownerID;
   console.log("Getting stores with ownerID: ", ownerID);
   try {
-    stores = await Store.find({ ownerID });
+    let stores = await Store.find({ ownerID });
     res.status(200).send(stores);
   } catch (err) {
     res.status(422).send("Unprocessible entity");
@@ -89,8 +97,11 @@ storeRouter.patch("/stores/update/:storeID", requireToken, async (req, res) => {
     "Validating Update Store informartion operation for store ID: ",
     storeID
   );
+  if (req.body && Object.keys(req.body).length === 0) {
+    return res.status(422).send("No update parameter was given");
+  }
   try {
-    store = await Store.findById({ _id: storeID });
+    let store = await Store.findById({ _id: storeID });
     if (store.ownerID != req.user._id) {
       console.log("Authorization Failed");
       return res.status(401).send("You can only update your own stores");
@@ -101,7 +112,9 @@ storeRouter.patch("/stores/update/:storeID", requireToken, async (req, res) => {
     const filter = { _id: storeID };
     const update = req.body;
 
-    updatedStore = await Store.findOneAndUpdate(filter, update, { new: true });
+    let updatedStore = await Store.findOneAndUpdate(filter, update, {
+      new: true,
+    });
     return res.status(200).send(updatedStore);
   } catch (err) {
     console.log("Encountered error updating store", err);
@@ -121,7 +134,7 @@ storeRouter.delete(
     );
 
     try {
-      store = await Store.findById({ _id: storeID });
+      let store = await Store.findById({ _id: storeID });
       if (!store) {
         console.log("Could not find any document with provided store id");
         return res.status(404).send("Could not find any documet with given id");
